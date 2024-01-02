@@ -9,3 +9,5 @@ You need userparamater for zabbix agent. Tested on Zabbix V6.
 
         
 Reload zabbix agent config fe.  zabbix_agent2 -R userparameter_reload
+
+Added active agent template
