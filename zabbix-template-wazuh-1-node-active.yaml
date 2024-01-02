@@ -1,0 +1,370 @@
+zabbix_export:
+  version: '6.0'
+  date: '2024-01-02T09:39:29Z'
+  groups:
+    - uuid: 95c2a63b8c58442aa939c9cd3ddd1cb9
+      name: 'Wazuh Servers'
+  templates:
+    - uuid: c2b1a7cfcf5a42349e3e7fba9dc391e8
+      template: 'wazuh template 1 node active'
+      name: 'wazuh template 1 node active'
+      description: |
+        userparameter:
+        
+        cat /etc/zabbix/zabbix_agentd.d/wazuh-status.conf 
+        UserParameter=wazuh.status, curl -s -k -XGET -u username:password 'https://127.0.0.1:9200/_cluster/health?pretty'
+        
+        
+        zabbix_agentd -R userparameter_reload
+      groups:
+        - name: 'Wazuh Servers'
+      items:
+        - uuid: 50f202e38210416ea7c50c3627475f8c
+          name: 'wazuh Dashboard 443tcp'
+          type: ZABBIX_ACTIVE
+          key: 'net.tcp.listen[443]'
+          history: 7d
+          trends: 7d
+          tags:
+            - tag: Application
+              value: Wazuh
+            - tag: Wazuh
+              value: Dashboard
+        - uuid: b79e60e74e994333a09ec25cff9e8960
+          name: 'wazuh Manager 1514/tcp'
+          type: ZABBIX_ACTIVE
+          key: 'net.tcp.listen[1514]'
+          history: 7d
+          trends: 7d
+          tags:
+            - tag: Application
+              value: Wazuh
+            - tag: Wazuh
+              value: 'Manager 1514'
+        - uuid: 32cb5eef728a47cf853c09d4ad54e619
+          name: 'wazuh Manager 1515/tcp'
+          type: ZABBIX_ACTIVE
+          key: 'net.tcp.listen[1515]'
+          history: 7d
+          trends: 7d
+          tags:
+            - tag: Application
+              value: Wazuh
+            - tag: Wazuh
+              value: 'Manager 1515'
+        - uuid: 17414b62651949a4adb7c767fa1c33a6
+          name: 'wazuh Indexer 9200/tcp'
+          type: ZABBIX_ACTIVE
+          key: 'net.tcp.listen[9200]'
+          history: 7d
+          trends: 7d
+          tags:
+            - tag: Application
+              value: Wazuh
+            - tag: Wazuh
+              value: 'Indexer 9200'
+        - uuid: 00db539131b44f13872bbda8ea91ef01
+          name: 'wazuh Indexer 9300/tcp'
+          type: ZABBIX_ACTIVE
+          key: 'net.tcp.listen[9300]'
+          history: 7d
+          trends: 7d
+          tags:
+            - tag: Application
+              value: Wazuh
+            - tag: Wazuh
+              value: 'Indexer 9300'
+        - uuid: 99fd4a0f886b4a6a8b2b5898ce63cadd
+          name: 'wazuh Manager 514/udp'
+          type: ZABBIX_ACTIVE
+          key: 'net.udp.listen[514]'
+          history: 7d
+          trends: 7d
+          status: DISABLED
+          tags:
+            - tag: Application
+              value: Wazuh
+            - tag: Wazuh
+              value: 'Manager 514'
+        - uuid: d188e1fca98340419dfc55869f769c2d
+          name: wazuh-active_primary_shards
+          type: DEPENDENT
+          key: wazuh-active_primary_shards
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.active_primary_shards
+          master_item:
+            key: wazuh.status
+        - uuid: 9667ffe558744c2f83832899f26a4ad0
+          name: wazuh-active_shards
+          type: DEPENDENT
+          key: wazuh-active_shards
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.active_shards
+          master_item:
+            key: wazuh.status
+          triggers:
+            - uuid: 660e1a87b2574eda954955ef7236161d
+              expression: 'last(/wazuh template 1 node active/wazuh-active_shards)> {$SHARDS}'
+              name: 'Wazuh Opensearch Shard numbers > {$SHARDS}'
+              priority: WARNING
+        - uuid: b14c467f684c4da3b0230acf594d1078
+          name: wazuh-active_shards_percent_as_number
+          type: DEPENDENT
+          key: wazuh-active_shards_percent_as_number
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.active_shards_percent_as_number
+          master_item:
+            key: wazuh.status
+        - uuid: 9b4bfd4a1c4a4887b0ff1c7cd152ff51
+          name: wazuh-cluster_name
+          type: DEPENDENT
+          key: wazuh-cluster_name
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.cluster_name
+          master_item:
+            key: wazuh.status
+        - uuid: a65671abad4d45dcb864778e5d4c4e73
+          name: wazuh-delayed_unassigned_shards
+          type: DEPENDENT
+          key: wazuh-delayed_unassigned_shards
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.delayed_unassigned_shards
+          master_item:
+            key: wazuh.status
+        - uuid: fe2aef49e35041a29f62ae070272151a
+          name: wazuh-discovered_cluster_manager
+          type: DEPENDENT
+          key: wazuh-discovered_cluster_manager
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.discovered_cluster_manager
+          master_item:
+            key: wazuh.status
+        - uuid: a058298f938c483faa777af05c0530ba
+          name: wazuh-discovered_master
+          type: DEPENDENT
+          key: wazuh-discovered_master
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.discovered_master
+          master_item:
+            key: wazuh.status
+        - uuid: 91110693b3e240db85c285232a38c0b5
+          name: wazuh-initializing_shards
+          type: DEPENDENT
+          key: wazuh-initializing_shards
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.initializing_shards
+          master_item:
+            key: wazuh.status
+        - uuid: deca34c54eaf474782d427ad78071d1c
+          name: wazuh-number_of_data_nodes
+          type: DEPENDENT
+          key: wazuh-number_of_data_nodes
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.number_of_data_nodes
+          master_item:
+            key: wazuh.status
+        - uuid: 538b174e2ae14ce48bc6c20c28dcbaea
+          name: wazuh-number_of_in_flight_fetch
+          type: DEPENDENT
+          key: wazuh-number_of_in_flight_fetch
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.number_of_in_flight_fetch
+          master_item:
+            key: wazuh.status
+        - uuid: 184caa7e7fe346cb8d1b74954168c583
+          name: wazuh-number_of_nodes
+          type: DEPENDENT
+          key: wazuh-number_of_nodes
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.number_of_nodes
+          master_item:
+            key: wazuh.status
+        - uuid: 2df724503a484a5d921fe0b7ab073175
+          name: wazuh-number_of_pending_tasks
+          type: DEPENDENT
+          key: wazuh-number_of_pending_tasks
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.number_of_pending_tasks
+          master_item:
+            key: wazuh.status
+        - uuid: f8ba6159278643c5ba5b9088623e37c3
+          name: wazuh-relocating_shards
+          type: DEPENDENT
+          key: wazuh-relocating_shards
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.relocating_shards
+          master_item:
+            key: wazuh.status
+        - uuid: 1395985a827e49daa6ef7fbe8d7e06c0
+          name: wazuh-status
+          type: DEPENDENT
+          key: wazuh-status
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.status
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '900'
+          master_item:
+            key: wazuh.status
+          triggers:
+            - uuid: 0e737bb0e14043e6b2ec36ccdcd17e37
+              expression: 'find(/wazuh template 1 node active/wazuh-status,,,"red")=1'
+              name: 'Wazuh Cluster status Red'
+              priority: HIGH
+            - uuid: 8a8da5918a2c4bb2894b35a005c8ea6a
+              expression: 'find(/wazuh template 1 node active/wazuh-status,,,"yellow")=1'
+              name: 'Wazuh Cluster status Yellow'
+              priority: WARNING
+        - uuid: d67c7039e188469eb66bf06c3417f020
+          name: wazuh-task_max_waiting_in_queue_millis
+          type: DEPENDENT
+          key: wazuh-task_max_waiting_in_queue_millis
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.task_max_waiting_in_queue_millis
+          master_item:
+            key: wazuh.status
+        - uuid: 2d9ae5af336d40b5afd394d42e13ee76
+          name: wazuh-timed_out
+          type: DEPENDENT
+          key: wazuh-timed_out
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.timed_out
+          master_item:
+            key: wazuh.status
+        - uuid: 44563773026845c6a1e4c684e4207dcc
+          name: wazuh-unassigned_shards
+          type: DEPENDENT
+          key: wazuh-unassigned_shards
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.unassigned_shards
+          master_item:
+            key: wazuh.status
+        - uuid: fab498cad1ef4aaab2c145c96f6726ba
+          name: wazuh-status
+          type: ZABBIX_ACTIVE
+          key: wazuh.status
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+      macros:
+        - macro: '{$SHARDS}'
+          value: '900'
+          description: 'Alert level'
+  triggers:
+    - uuid: d395c522bf1a4c569911740a0f38043d
+      expression: |
+        last(/wazuh template 1 node active/net.tcp.listen[443])=0
+        or
+        last(/wazuh template 1 node active/net.tcp.listen[9200])=0
+        or
+        last(/wazuh template 1 node active/net.tcp.listen[9300])=0
+        or
+        last(/wazuh template 1 node active/net.tcp.listen[1514])=0
+        or
+        last(/wazuh template 1 node active/net.tcp.listen[1515])=0
+        or
+        last(/wazuh template 1 node active/net.udp.listen[514])=0
+      name: 'Wazuh problem'
+      priority: WARNING
